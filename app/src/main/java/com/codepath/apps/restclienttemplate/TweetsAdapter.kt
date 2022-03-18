@@ -36,6 +36,7 @@ ArrayList<Tweet>) : RecyclerView.Adapter<TweetsAdapter.ViewHolder>(){
         holder.tvTweetMin.text = tweet.duration
 
         Glide.with(holder.itemView).load(tweet.user?.publicImageUrl).into(holder.ivProfileImage)
+        Glide.with(holder.itemView).load(tweet.mediaImageUrl).into(holder.ivTweetImage)
 
     }
 
@@ -58,6 +59,7 @@ ArrayList<Tweet>) : RecyclerView.Adapter<TweetsAdapter.ViewHolder>(){
          val  tvScreenName = itemView.findViewById<TextView>(R.id.tvHandle)
          val  tvTweetBody = itemView.findViewById<TextView>(R.id.tvTweetBody)
         val  tvTweetMin = itemView.findViewById<TextView>(R.id.min)
+        val ivTweetImage = itemView.findViewById<ImageView>(R.id.ivTweetImage)
 
 
     }

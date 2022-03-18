@@ -1,16 +1,29 @@
 package com.codepath.apps.restclienttemplate.models
 
 import android.icu.util.Calendar
+import android.os.Parcelable
+import androidx.room.*
+import kotlinx.parcelize.Parcelize
 import org.json.JSONArray
 import org.json.JSONObject
 
-class Tweet {
 
-    var body: String = ""
-    var createdAt: String=""
-    var duration: String=""
-    var uid: Long = 0
-    var user: User? = null
+@Entity(
+    foreignKeys = [ForeignKey(
+        entity = User::class,
+        parentColumns = arrayOf("id"),
+        childColumns = arrayOf("user_id")
+    )]
+)
+
+@Parcelize
+class Tweet(@ColumnInfo @PrimaryKey(autoGenerate = true) var id: Long? = null,
+            @ColumnInfo var body: String = "", @ColumnInfo var createdAt: String="",
+            @ColumnInfo var duration: String="",
+            @ColumnInfo var uid: Long = 0,
+            @Ignore var user: User? = null,
+            @ColumnInfo var user_id: Long? = null,
+            var mediaImageUrl: String=""):Parcelable{
 
     companion object{
         fun fromJson(jsonObject: JSONObject): Tweet{
@@ -20,7 +33,9 @@ class Tweet {
             tweet.duration = TimeFormatter.getTimeDifference(tweet.createdAt)
             tweet.uid=jsonObject.getLong("id")
             tweet.user= User.fromJSON(jsonObject.getJSONObject("user"))
+            tweet.user_id =tweet.user?.id
             return tweet
+
         }
 
         fun fromJsonArray(jsonArray: JSONArray): List<Tweet> {

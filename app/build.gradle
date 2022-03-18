@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
     id 'kotlin-kapt'
+    id 'kotlin-parcelize'
 }
 
 def apikeyPropertiesFile = rootProject.file("apikey.properties")
@@ -50,6 +51,10 @@ android {
     }
 }
 
+ext {
+    roomVersion = "2.1.0"
+}
+
 dependencies {
 
     implementation "com.mikepenz:materialdrawer:6.1.0-rc01"
@@ -59,7 +64,12 @@ dependencies {
     implementation 'com.mikepenz:ionicons-typeface:2.0.1.5@aar'
     implementation 'com.mikepenz:typeicons-typeface:2.0.7.5@aar'
 
+    implementation 'com.facebook.stetho:stetho:1.5.1'
+
     implementation 'com.makeramen:roundedimageview:2.3.0'
+    // Room for simple persistence with an ORM
+    implementation "androidx.room:room-runtime:$roomVersion"
+    annotationProcessor "androidx.room:room-compiler:$roomVersion"
 
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"

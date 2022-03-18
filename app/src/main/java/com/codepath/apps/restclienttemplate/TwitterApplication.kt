@@ -23,6 +23,7 @@ class TwitterApplication : Application() {
         super.onCreate()
         // when upgrading versions, kill the original tables by using
         // fallbackToDestructiveMigration()
+        Stetho.initializeWithDefaults(this);
         myDatabase = Room.databaseBuilder(
             this, MyDatabase::class.java,
             MyDatabase.NAME

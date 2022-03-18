@@ -1,12 +1,23 @@
 package com.codepath.apps.restclienttemplate
 
+import android.app.Activity
+import android.content.Intent
+import android.os.AsyncTask
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
+import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.codepath.apps.restclienttemplate.models.Tweet
+import com.codepath.apps.restclienttemplate.models.TweetModelDao
+import com.codepath.apps.restclienttemplate.models.User
+import com.codepath.apps.restclienttemplate.models.UserModelDao
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler
 import okhttp3.Headers
 import org.json.JSONException
@@ -19,6 +30,7 @@ class TimelineActivity : AppCompatActivity() {
     lateinit var swipeContainer: SwipeRefreshLayout
 
     val tweets = ArrayList<Tweet>()
+    var tweetModelDao: TweetModelDao? = null
     lateinit var scrollListener: EndlessRecyclerViewScrollListener
     var maxId: Long = POSITIVE_INFINITY.toLong()
 
@@ -33,6 +45,8 @@ class TimelineActivity : AppCompatActivity() {
             Log.i(TAG, "Refreshing the timeline")
             populateHomeTimeline()
         }
+
+
 
         swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
             android.R.color.holo_green_light,
@@ -81,6 +95,9 @@ class TimelineActivity : AppCompatActivity() {
                             Log.i(TAG, "MAX ID NOW IS  $maxId")
                             maxId = item.uid - 1
                         }
+                        val tweet = item
+                        tweetModelDao = (applicationContext as TwitterApplication).myDatabase?.tweetModelDao()
+                        AsyncTask.execute { tweetModelDao?.insertModel(tweet) }
                     }
                     Log.i(TAG, "$maxId")
                     tweets.addAll(listOfNewTweets)
@@ -97,6 +114,32 @@ class TimelineActivity : AppCompatActivity() {
         // 2. Deserialize and construct new model objects from the API response
         // 3. Append the new data objects to the existing set of items inside the array of items
         // 4. Notify the adapter of the new items made with `notifyItemRangeInserted()`
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+        return true
+    }
+
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if(item.itemId == R.id.compose){
+            val intent = Intent(this, ComposeActivity::class.java)
+            startActivityForResult(intent, REQUEST_CODE)
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    //Let's us return to the timeline activity after posting a tweet
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if(resultCode== RESULT_OK && requestCode== REQUEST_CODE){
+            val tweet = data?.getParcelableExtra("tweet") as Tweet?
+            tweets.add(0, tweet!!)
+            adapter.notifyItemInserted(0)
+            rvTweets.smoothScrollToPosition(0)
+
+        }
+        super.onActivityResult(requestCode, resultCode, data)
     }
 
     fun populateHomeTimeline(){
@@ -142,5 +185,6 @@ class TimelineActivity : AppCompatActivity() {
 
     companion object{
         val TAG = "TimelineActivity"
+        val REQUEST_CODE=10
     }
 }

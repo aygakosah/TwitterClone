@@ -1,12 +1,23 @@
 package com.codepath.apps.restclienttemplate.models
 
+import android.os.Parcelable
+import androidx.room.Entity
+import androidx.room.ForeignKey
 import org.json.JSONObject
+import androidx.room.PrimaryKey
 
-class User {
+import androidx.room.ColumnInfo
+import android.provider.ContactsContract.CommonDataKinds.Organization
+import kotlinx.parcelize.Parcelize
 
-    var name: String =""
-    var screenName: String=""
-    var publicImageUrl: String=""
+
+@Entity
+@Parcelize
+class User(@ColumnInfo @PrimaryKey(autoGenerate = true) var id: Long? = null,
+           @ColumnInfo var name: String ="",
+           @ColumnInfo var screenName: String="",
+           @ColumnInfo var publicImageUrl: String=""):Parcelable{
+
 
     companion object{
         fun fromJSON(jsonObject: JSONObject): User {
